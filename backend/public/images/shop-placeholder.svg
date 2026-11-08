@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" fill="none">
+  <rect width="400" height="400" fill="#F8FAFC"/>
+  <path d="M120 160L200 120L280 160V260C280 265.523 275.523 270 270 270H130C124.477 270 120 265.523 120 260V160Z" stroke="#94A3B8" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M160 270V210H240V270" stroke="#94A3B8" stroke-width="8" stroke-linejoin="round"/>
+  <text x="200" y="315" text-anchor="middle" fill="#64748B" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Shop Logo</text>
+</svg>
