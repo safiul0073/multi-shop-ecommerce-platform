@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import React, { useState, useEffect, Suspense } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
@@ -84,6 +85,7 @@ function CatalogContent() {
       return res.data;
     },
     onSuccess: () => {
+      toast.success("Product added to your shop");
       queryClient.invalidateQueries({ queryKey: ["owner", "catalog"] });
       queryClient.invalidateQueries({ queryKey: ["owner", "dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["owner", "my-products"] });
@@ -92,6 +94,7 @@ function CatalogContent() {
     },
     onError: (err: { response?: { data?: { message?: string } }; message?: string }) => {
       setAddError(err.response?.data?.message || err.message || "Failed to add product to shop.");
+      toast.error(err.response?.data?.message || err.message || "Failed to add product to shop.");
     },
   });
 
@@ -112,6 +115,7 @@ function CatalogContent() {
       return res.data;
     },
     onSuccess: () => {
+      toast.success("Product created and listed");
       queryClient.invalidateQueries({ queryKey: ["owner", "catalog"] });
       queryClient.invalidateQueries({ queryKey: ["owner", "dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["owner", "my-products"] });
@@ -120,6 +124,7 @@ function CatalogContent() {
     },
     onError: (err: { response?: { data?: { message?: string } }; message?: string }) => {
       setCreateError(err.response?.data?.message || err.message || "Failed to create product.");
+      toast.error(err.response?.data?.message || err.message || "Failed to create product.");
     },
   });
 
@@ -150,7 +155,7 @@ function CatalogContent() {
   return (
     <DashboardLayout
       allowedRole="shop_owner"
-      title="Shared Product Catalog"
+      title="Browse catalog"
       description="Browse central global inventory and configure custom selling prices for your shop"
       actions={
         <Button onClick={() => { resetCreateForm(); setIsCreateOpen(true); }} className="gap-2">
@@ -208,10 +213,10 @@ function CatalogContent() {
 
                 {/* SKU Badge & Creator */}
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                  <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
                     {prod.sku}
                   </span>
-                  <span className="text-[11px] text-slate-400">
+                  <span className="text-xs text-slate-400">
                     By {prod.creator?.name || "Admin"}
                   </span>
                 </div>
@@ -299,7 +304,7 @@ function CatalogContent() {
           <div className="space-y-4">
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-xs">
               <span className="font-bold text-slate-900 block">{selectedProductToAdd.name}</span>
-              <span className="font-mono text-slate-400 text-[11px]">{selectedProductToAdd.sku}</span>
+              <span className="font-mono text-slate-400 text-xs">{selectedProductToAdd.sku}</span>
               <p className="text-slate-600 mt-1 line-clamp-2">
                 Fallback: {selectedProductToAdd.description || "No global description"}
               </p>
@@ -318,7 +323,7 @@ function CatalogContent() {
                 onChange={(e) => setSellingPrice(e.target.value)}
                 required
               />
-              <p className="text-[11px] text-slate-400">
+              <p className="text-xs text-slate-400">
                 Your shop sells at this price. Other shops can set different prices.
               </p>
             </div>
@@ -366,7 +371,7 @@ function CatalogContent() {
       <Modal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
-        title="Create & List New Product"
+        title="Create and list a new product"
         description="Creates a product in the shared catalog and immediately lists it in your shop within one transaction."
         maxWidth="lg"
       >

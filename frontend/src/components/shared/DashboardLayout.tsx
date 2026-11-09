@@ -29,16 +29,18 @@ export function DashboardLayout({
         {/* Main Content Area */}
         <div className="flex flex-1 flex-col overflow-y-auto">
           {/* Header Bar */}
-          <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between border-b border-slate-200 bg-white/95 px-6 backdrop-blur-xs">
-            <div>
-              {title && <h1 className="text-xl font-bold tracking-tight text-slate-900">{title}</h1>}
-              {description && <p className="text-xs text-slate-500">{description}</p>}
+          <header className="sticky top-0 z-20 shrink-0 border-b border-slate-200 bg-white/90 backdrop-blur">
+            <div className="mx-auto flex min-h-16 w-full max-w-7xl items-center justify-between gap-4 py-3 pl-16 pr-4 md:px-8">
+            <div className="min-w-0">
+              {title && <h1 className="text-lg font-semibold tracking-tight text-slate-900">{title}</h1>}
+              {description && <p className="hidden sm:block text-sm text-slate-500">{description}</p>}
             </div>
             {actions && <div className="flex items-center gap-2">{actions}</div>}
+            </div>
           </header>
 
           {/* Page Body */}
-          <main className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto">{children}</main>
+          <main className="mx-auto w-full max-w-7xl flex-1 space-y-6 p-4 md:p-8">{children}</main>
         </div>
       </div>
     </ProtectedRoute>

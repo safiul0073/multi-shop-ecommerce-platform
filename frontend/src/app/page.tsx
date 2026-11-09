@@ -23,7 +23,7 @@ export default function HomePage() {
             </div>
             <div>
               <span className="font-extrabold text-slate-900 tracking-tight">MultiShop</span>
-              <span className="text-[10px] block font-semibold text-indigo-600 uppercase tracking-wider">
+              <span className="text-xs block font-semibold text-indigo-600 uppercase tracking-wider">
                 Management System
               </span>
             </div>
@@ -51,14 +51,14 @@ export default function HomePage() {
         </h1>
 
         <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-          A production-grade multi-tenant e-commerce platform. Administrators and merchants share a single
+          A production-grade multi-tenant e-commerce platform. Administrators and shop owners share a single
           central product repository while independently setting custom prices, descriptions, and media.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
           <Link href="/login">
             <Button size="lg" className="gap-2 shadow-md">
-              Access Merchant / Admin Console <ArrowRight className="h-4 w-4" />
+              Sign in to the console <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
           <Link href="/store/fashion-house">
@@ -156,7 +156,7 @@ export default function HomePage() {
             </div>
             <h3 className="font-bold text-slate-900 text-base">Independent Shop Pricing</h3>
             <p className="text-xs text-slate-500 leading-relaxed">
-              Each merchant sets independent selling prices, promotional descriptions, and thumbnails with automatic global fallbacks.
+              Each shop owner sets independent selling prices, promotional descriptions, and thumbnails with automatic global fallbacks.
             </p>
           </div>
 

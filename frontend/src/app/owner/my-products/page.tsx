@@ -1,14 +1,17 @@
 "use client";
 
+import { toast } from "sonner";
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { DashboardLayout } from "@/components/shared/DashboardLayout";
 import { Button } from "@/components/ui/button";
+import { TableSkeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui/badge";
 import { Modal } from "@/components/ui/modal";
 import { formatPrice } from "@/lib/utils";
 import { ShopProduct } from "@/types";
@@ -17,8 +20,6 @@ import {
   Package,
   Edit2,
   Trash2,
-  CheckCircle,
-  XCircle,
   Plus,
   Eye,
   AlertTriangle,
@@ -75,6 +76,7 @@ export default function OwnerMyProductsPage() {
       return res.data;
     },
     onSuccess: () => {
+      toast.success("Listing updated");
       queryClient.invalidateQueries({ queryKey: ["owner", "my-products"] });
       queryClient.invalidateQueries({ queryKey: ["owner", "dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["owner", "catalog"] });
@@ -82,6 +84,7 @@ export default function OwnerMyProductsPage() {
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {
       setFormError(err.response?.data?.message || "Failed to update listing.");
+      toast.error(err.response?.data?.message || "Failed to update listing.");
     },
   });
 
@@ -92,10 +95,14 @@ export default function OwnerMyProductsPage() {
       await api.delete(`/owner/shops/${primaryShop.id}/products/${shopProductId}`);
     },
     onSuccess: () => {
+      toast.success("Listing removed");
       queryClient.invalidateQueries({ queryKey: ["owner", "my-products"] });
       queryClient.invalidateQueries({ queryKey: ["owner", "dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["owner", "catalog"] });
       setDeleteListingId(null);
+    },
+    onError: () => {
+      toast.error("Something went wrong. Please try again.");
     },
   });
 
@@ -114,7 +121,7 @@ export default function OwnerMyProductsPage() {
   return (
     <DashboardLayout
       allowedRole="shop_owner"
-      title="My Shop Inventory"
+      title="My products"
       description={`Manage product listings, pricing, and visibility for ${primaryShop?.name}`}
       actions={
         <Link href="/owner/catalog">
@@ -137,15 +144,15 @@ export default function OwnerMyProductsPage() {
         </div>
 
         <div className="flex items-center gap-3 w-full sm:w-auto">
-          <select
+          <Select
             value={statusFilter}
             onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
             className="h-9 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            <option value="">All Statuses</option>
-            <option value="active">Active Only</option>
-            <option value="inactive">Inactive Only</option>
-          </select>
+            <option value="">All statuses</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </Select>
         </div>
       </div>
 
@@ -153,20 +160,20 @@ export default function OwnerMyProductsPage() {
       <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-600">
-            <thead className="bg-slate-50 text-xs font-semibold uppercase text-slate-500 border-b border-slate-200">
+            <thead className="border-b border-slate-200 bg-slate-50/60">
               <tr>
-                <th className="px-6 py-3.5">Product</th>
-                <th className="px-6 py-3.5">SKU</th>
-                <th className="px-6 py-3.5">Selling Price</th>
-                <th className="px-6 py-3.5">Customization</th>
-                <th className="px-6 py-3.5">Status</th>
-                <th className="px-6 py-3.5 text-right">Actions</th>
+                <th className="px-6 py-3 font-medium">Product</th>
+                <th className="px-6 py-3 font-medium">SKU</th>
+                <th className="px-6 py-3 font-medium">Selling Price</th>
+                <th className="px-6 py-3 font-medium">Customization</th>
+                <th className="px-6 py-3 font-medium">Status</th>
+                <th className="px-6 py-3 font-medium text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-slate-400">Loading inventory...</td>
+                  <td colSpan={6} className="p-0"><TableSkeleton rows={4} /></td>
                 </tr>
               ) : listings.length === 0 ? (
                 <tr>
@@ -212,39 +219,33 @@ export default function OwnerMyProductsPage() {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <Badge variant={item.status === "active" ? "success" : "secondary"}>
-                        {item.status === "active" ? (
-                          <span className="flex items-center gap-1"><CheckCircle className="h-3 w-3" /> Active</span>
-                        ) : (
-                          <span className="flex items-center gap-1"><XCircle className="h-3 w-3" /> Inactive</span>
-                        )}
-                      </Badge>
+                      <StatusBadge status={item.status} />
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <Button
                           variant="ghost"
-                          size="icon"
+                          size="icon" className="group h-8 w-8"
                           onClick={() => setViewListingDetail(item)}
                           title="View Details"
                         >
-                          <Eye className="h-4 w-4 text-slate-500" />
+                          <Eye className="h-4 w-4 text-slate-500 group-hover:text-slate-900" />
                         </Button>
                         <Button
                           variant="ghost"
-                          size="icon"
+                          size="icon" className="group h-8 w-8"
                           onClick={() => openEdit(item)}
                           title="Edit Listing"
                         >
-                          <Edit2 className="h-4 w-4 text-indigo-600" />
+                          <Edit2 className="h-4 w-4 text-slate-500 group-hover:text-slate-900" />
                         </Button>
                         <Button
                           variant="ghost"
-                          size="icon"
+                          size="icon" className="group h-8 w-8"
                           onClick={() => setDeleteListingId(item.id)}
                           title="Remove from Shop"
                         >
-                          <Trash2 className="h-4 w-4 text-rose-500" />
+                          <Trash2 className="h-4 w-4 text-slate-500 group-hover:text-rose-600" />
                         </Button>
                       </div>
                     </td>
@@ -318,7 +319,7 @@ export default function OwnerMyProductsPage() {
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
             />
-            <p className="text-[11px] text-slate-400">
+            <p className="text-xs text-slate-400">
               Fallback: {editListing?.product?.description || "None"}
             </p>
           </div>
@@ -334,14 +335,14 @@ export default function OwnerMyProductsPage() {
 
           <div className="space-y-1">
             <label className="text-xs font-medium text-slate-700">Listing Status</label>
-            <select
+            <Select
               value={status}
               onChange={(e) => setStatus(e.target.value as "active" | "inactive")}
               className="w-full h-9 rounded-lg border border-slate-300 bg-white px-3 text-xs text-slate-800 shadow-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="active">Active (Visible in storefront)</option>
               <option value="inactive">Inactive (Hidden from storefront)</option>
-            </select>
+            </Select>
           </div>
 
           <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
@@ -389,7 +390,7 @@ export default function OwnerMyProductsPage() {
       <Modal
         isOpen={!!viewListingDetail}
         onClose={() => setViewListingDetail(null)}
-        title={`Listing Telemetry: ${viewListingDetail?.product?.name}`}
+        title={`Listing: ${viewListingDetail?.product?.name}`}
         maxWidth="md"
       >
         {viewListingDetail && (

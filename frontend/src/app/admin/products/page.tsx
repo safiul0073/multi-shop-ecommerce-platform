@@ -1,10 +1,12 @@
 "use client";
 
+import { toast } from "sonner";
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { DashboardLayout } from "@/components/shared/DashboardLayout";
 import { Button } from "@/components/ui/button";
+import { TableSkeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Modal } from "@/components/ui/modal";
@@ -71,6 +73,7 @@ export default function AdminProductsPage() {
       return res.data;
     },
     onSuccess: () => {
+      toast.success("Product added to catalog");
       queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
       queryClient.invalidateQueries({ queryKey: ["admin", "dashboard"] });
       setIsCreateOpen(false);
@@ -78,6 +81,7 @@ export default function AdminProductsPage() {
     },
     onError: (err: { response?: { data?: { message?: string } }; message?: string }) => {
       setFormError(err.response?.data?.message || err.message || "Failed to create product.");
+      toast.error(err.response?.data?.message || err.message || "Failed to create product.");
     },
   });
 
@@ -94,12 +98,14 @@ export default function AdminProductsPage() {
       return res.data;
     },
     onSuccess: () => {
+      toast.success("Product updated");
       queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
       setEditProduct(null);
       resetForm();
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {
       setFormError(err.response?.data?.message || "Failed to update product.");
+      toast.error(err.response?.data?.message || "Failed to update product.");
     },
   });
 
@@ -109,9 +115,13 @@ export default function AdminProductsPage() {
       await api.delete(`/admin/products/${id}`);
     },
     onSuccess: () => {
+      toast.success("Product removed from catalog");
       queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
       queryClient.invalidateQueries({ queryKey: ["admin", "dashboard"] });
       setDeleteProductId(null);
+    },
+    onError: () => {
+      toast.error("Something went wrong. Please try again.");
     },
   });
 
@@ -136,11 +146,11 @@ export default function AdminProductsPage() {
   return (
     <DashboardLayout
       allowedRole="admin"
-      title="Shared Product Catalog"
-      description="Central product repository available across all merchant shops"
+      title="Catalog"
+      description="One product list shared by every shop"
       actions={
         <Button onClick={() => { resetForm(); setIsCreateOpen(true); }} className="gap-2">
-          <Plus className="h-4 w-4" /> Add Catalog Product
+          <Plus className="h-4 w-4" /> Add product
         </Button>
       }
     >
@@ -161,20 +171,20 @@ export default function AdminProductsPage() {
       <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-600">
-            <thead className="bg-slate-50 text-xs font-semibold uppercase text-slate-500 border-b border-slate-200">
+            <thead className="border-b border-slate-200 bg-slate-50/60">
               <tr>
-                <th className="px-6 py-3.5">Product</th>
-                <th className="px-6 py-3.5">SKU</th>
-                <th className="px-6 py-3.5">Created By</th>
-                <th className="px-6 py-3.5">Shop Adoption</th>
-                <th className="px-6 py-3.5">Created</th>
-                <th className="px-6 py-3.5 text-right">Actions</th>
+                <th className="px-6 py-3 font-medium">Product</th>
+                <th className="px-6 py-3 font-medium">SKU</th>
+                <th className="px-6 py-3 font-medium">Created By</th>
+                <th className="px-6 py-3 font-medium">Listed in</th>
+                <th className="px-6 py-3 font-medium">Created</th>
+                <th className="px-6 py-3 font-medium text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-slate-400">Loading catalog...</td>
+                  <td colSpan={6} className="p-0"><TableSkeleton rows={4} /></td>
                 </tr>
               ) : products.length === 0 ? (
                 <tr>
@@ -206,7 +216,7 @@ export default function AdminProductsPage() {
                       <span className="text-xs font-medium text-slate-700 block">
                         {prod.creator?.name || "System Admin"}
                       </span>
-                      <span className="text-[11px] text-slate-400 capitalize">
+                      <span className="text-xs text-slate-400 capitalize">
                         {prod.creator?.role?.replace("_", " ")}
                       </span>
                     </td>
@@ -223,27 +233,27 @@ export default function AdminProductsPage() {
                       <div className="flex items-center justify-end gap-1.5">
                         <Button
                           variant="ghost"
-                          size="icon"
+                          size="icon" className="group h-8 w-8"
                           onClick={() => setSelectedProductDetail(prod)}
-                          title="View Adoption"
+                          title="View shops listing this product"
                         >
-                          <Eye className="h-4 w-4 text-slate-500" />
+                          <Eye className="h-4 w-4 text-slate-500 group-hover:text-slate-900" />
                         </Button>
                         <Button
                           variant="ghost"
-                          size="icon"
+                          size="icon" className="group h-8 w-8"
                           onClick={() => openEdit(prod)}
                           title="Edit Product"
                         >
-                          <Edit2 className="h-4 w-4 text-indigo-600" />
+                          <Edit2 className="h-4 w-4 text-slate-500 group-hover:text-slate-900" />
                         </Button>
                         <Button
                           variant="ghost"
-                          size="icon"
+                          size="icon" className="group h-8 w-8"
                           onClick={() => setDeleteProductId(prod.id)}
                           title="Delete Product"
                         >
-                          <Trash2 className="h-4 w-4 text-rose-500" />
+                          <Trash2 className="h-4 w-4 text-slate-500 group-hover:text-rose-600" />
                         </Button>
                       </div>
                     </td>
@@ -286,7 +296,7 @@ export default function AdminProductsPage() {
       <Modal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
-        title="Add Catalog Product"
+        title="Add product"
         description="Creates a product in the global catalog. Available for any shop owner to list."
         maxWidth="md"
       >
@@ -406,7 +416,7 @@ export default function AdminProductsPage() {
       <Modal
         isOpen={!!selectedProductDetail}
         onClose={() => setSelectedProductDetail(null)}
-        title={`Adoption Telemetry: ${selectedProductDetail?.name}`}
+        title={`Shops listing ${selectedProductDetail?.name}`}
         maxWidth="lg"
       >
         {selectedProductDetail && (
@@ -438,7 +448,7 @@ export default function AdminProductsPage() {
                       </div>
                       <div className="text-right">
                         <span className="font-bold text-slate-900 text-sm">৳{listing.price}</span>
-                        <p className="text-[10px] text-slate-400">{listing.status}</p>
+                        <p className="text-xs text-slate-400">{listing.status}</p>
                       </div>
                     </div>
                   ))

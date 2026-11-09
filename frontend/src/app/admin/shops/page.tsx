@@ -1,13 +1,16 @@
 "use client";
 
+import { toast } from "sonner";
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { DashboardLayout } from "@/components/shared/DashboardLayout";
 import { Button } from "@/components/ui/button";
+import { TableSkeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui/badge";
 import { Modal } from "@/components/ui/modal";
 import { formatDate } from "@/lib/utils";
 import { Shop, User } from "@/types";
@@ -19,8 +22,6 @@ import {
   Trash2,
   Edit2,
   Eye,
-  CheckCircle,
-  XCircle,
   Layers,
 } from "lucide-react";
 import Link from "next/link";
@@ -107,6 +108,7 @@ export default function AdminShopsPage() {
       return res.data;
     },
     onSuccess: () => {
+      toast.success("Shop created");
       queryClient.invalidateQueries({ queryKey: ["admin", "shops"] });
       queryClient.invalidateQueries({ queryKey: ["admin", "dashboard"] });
       setIsCreateOpen(false);
@@ -114,6 +116,7 @@ export default function AdminShopsPage() {
     },
     onError: (err: { response?: { data?: { message?: string } }; message?: string }) => {
       setFormError(err.response?.data?.message || err.message || "Failed to create shop.");
+      toast.error(err.response?.data?.message || err.message || "Failed to create shop.");
     },
   });
 
@@ -133,12 +136,14 @@ export default function AdminShopsPage() {
       return res.data;
     },
     onSuccess: () => {
+      toast.success("Shop updated");
       queryClient.invalidateQueries({ queryKey: ["admin", "shops"] });
       setEditShop(null);
       resetForm();
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {
       setFormError(err.response?.data?.message || "Failed to update shop.");
+      toast.error(err.response?.data?.message || "Failed to update shop.");
     },
   });
 
@@ -148,9 +153,13 @@ export default function AdminShopsPage() {
       await api.delete(`/admin/shops/${id}`);
     },
     onSuccess: () => {
+      toast.success("Shop deleted");
       queryClient.invalidateQueries({ queryKey: ["admin", "shops"] });
       queryClient.invalidateQueries({ queryKey: ["admin", "dashboard"] });
       setDeleteShopId(null);
+    },
+    onError: () => {
+      toast.error("Something went wrong. Please try again.");
     },
   });
 
@@ -187,8 +196,8 @@ export default function AdminShopsPage() {
   return (
     <DashboardLayout
       allowedRole="admin"
-      title="Shop Management"
-      description="Manage merchant storefronts, tenant ownership, and storefront settings"
+      title="Shops"
+      description="Create shops and manage their owners and status"
       actions={
         <Button onClick={() => { resetForm(); setIsCreateOpen(true); }} className="gap-2">
           <Plus className="h-4 w-4" /> Add New Shop
@@ -208,15 +217,15 @@ export default function AdminShopsPage() {
         </div>
 
         <div className="flex items-center gap-3 w-full sm:w-auto">
-          <select
+          <Select
             value={statusFilter}
             onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
             className="h-9 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            <option value="">All Statuses</option>
-            <option value="active">Active Only</option>
-            <option value="inactive">Inactive Only</option>
-          </select>
+            <option value="">All statuses</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </Select>
         </div>
       </div>
 
@@ -224,20 +233,20 @@ export default function AdminShopsPage() {
       <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-600">
-            <thead className="bg-slate-50 text-xs font-semibold uppercase text-slate-500 border-b border-slate-200">
+            <thead className="border-b border-slate-200 bg-slate-50/60">
               <tr>
-                <th className="px-6 py-3.5">Shop</th>
-                <th className="px-6 py-3.5">Owner</th>
-                <th className="px-6 py-3.5">Status</th>
-                <th className="px-6 py-3.5">Products</th>
-                <th className="px-6 py-3.5">Created</th>
-                <th className="px-6 py-3.5 text-right">Actions</th>
+                <th className="px-6 py-3 font-medium">Shop</th>
+                <th className="px-6 py-3 font-medium">Owner</th>
+                <th className="px-6 py-3 font-medium">Status</th>
+                <th className="px-6 py-3 font-medium">Products</th>
+                <th className="px-6 py-3 font-medium">Created</th>
+                <th className="px-6 py-3 font-medium text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-slate-400">Loading shops...</td>
+                  <td colSpan={6} className="p-0"><TableSkeleton rows={4} /></td>
                 </tr>
               ) : shops.length === 0 ? (
                 <tr>
@@ -271,13 +280,7 @@ export default function AdminShopsPage() {
                       <p className="text-xs text-slate-400">{shop.owner?.email}</p>
                     </td>
                     <td className="px-6 py-4">
-                      <Badge variant={shop.status === "active" ? "success" : "destructive"}>
-                        {shop.status === "active" ? (
-                          <span className="flex items-center gap-1"><CheckCircle className="h-3 w-3" /> Active</span>
-                        ) : (
-                          <span className="flex items-center gap-1"><XCircle className="h-3 w-3" /> Inactive</span>
-                        )}
-                      </Badge>
+                      <StatusBadge status={shop.status} />
                     </td>
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 text-xs font-semibold text-slate-700">
@@ -292,27 +295,27 @@ export default function AdminShopsPage() {
                       <div className="flex items-center justify-end gap-1.5">
                         <Button
                           variant="ghost"
-                          size="icon"
+                          size="icon" className="group h-8 w-8"
                           onClick={() => setSelectedShopDetail(shop)}
                           title="View Details"
                         >
-                          <Eye className="h-4 w-4 text-slate-500" />
+                          <Eye className="h-4 w-4 text-slate-500 group-hover:text-slate-900" />
                         </Button>
                         <Button
                           variant="ghost"
-                          size="icon"
+                          size="icon" className="group h-8 w-8"
                           onClick={() => openEdit(shop)}
                           title="Edit Shop"
                         >
-                          <Edit2 className="h-4 w-4 text-indigo-600" />
+                          <Edit2 className="h-4 w-4 text-slate-500 group-hover:text-slate-900" />
                         </Button>
                         <Button
                           variant="ghost"
-                          size="icon"
+                          size="icon" className="group h-8 w-8"
                           onClick={() => setDeleteShopId(shop.id)}
                           title="Delete Shop"
                         >
-                          <Trash2 className="h-4 w-4 text-rose-500" />
+                          <Trash2 className="h-4 w-4 text-slate-500 group-hover:text-rose-600" />
                         </Button>
                       </div>
                     </td>
@@ -355,8 +358,8 @@ export default function AdminShopsPage() {
       <Modal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
-        title="Create New Shop"
-        description="Provision a storefront and assign to an existing merchant or register a new owner"
+        title="New shop"
+        description="Provision a storefront and assign it to an existing or new shop owner"
         maxWidth="lg"
       >
         {formError && (
@@ -396,18 +399,18 @@ export default function AdminShopsPage() {
 
             {ownerMode === "existing" ? (
               <div>
-                <select
+                <Select
                   value={selectedOwnerId}
                   onChange={(e) => setSelectedOwnerId(e.target.value)}
                   className="w-full h-9 rounded-lg border border-slate-300 bg-white px-3 text-xs text-slate-800 shadow-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                  <option value="">-- Choose Existing Merchant --</option>
+                  <option value="">Select an owner</option>
                   {(ownersData || []).map((o) => (
                     <option key={o.id} value={o.id}>
                       {o.name} ({o.email})
                     </option>
                   ))}
-                </select>
+                </Select>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
@@ -493,14 +496,14 @@ export default function AdminShopsPage() {
             </div>
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-700">Status</label>
-              <select
+              <Select
                 value={shopStatus}
                 onChange={(e) => setShopStatus(e.target.value as "active" | "inactive")}
                 className="w-full h-9 rounded-lg border border-slate-300 bg-white px-3 text-xs text-slate-800 shadow-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="active">Active (Visible)</option>
                 <option value="inactive">Inactive (Hidden)</option>
-              </select>
+              </Select>
             </div>
           </div>
 
@@ -567,14 +570,14 @@ export default function AdminShopsPage() {
             </div>
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-700">Status</label>
-              <select
+              <Select
                 value={shopStatus}
                 onChange={(e) => setShopStatus(e.target.value as "active" | "inactive")}
                 className="w-full h-9 rounded-lg border border-slate-300 bg-white px-3 text-xs text-slate-800 shadow-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
-              </select>
+              </Select>
             </div>
           </div>
 
@@ -622,7 +625,7 @@ export default function AdminShopsPage() {
           <div className="space-y-4 text-xs">
             <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 grid grid-cols-2 gap-4">
               <div>
-                <p className="text-slate-400">Assigned Merchant</p>
+                <p className="text-slate-400">Owner</p>
                 <p className="font-semibold text-slate-800 text-sm mt-0.5">
                   {selectedShopDetail.owner?.name}
                 </p>

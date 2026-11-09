@@ -1,10 +1,12 @@
 "use client";
 
+import { toast } from "sonner";
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { DashboardLayout } from "@/components/shared/DashboardLayout";
 import { Button } from "@/components/ui/button";
+import { TableSkeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { formatDate } from "@/lib/utils";
@@ -70,13 +72,15 @@ export default function AdminShopOwnersPage() {
       return res.data;
     },
     onSuccess: () => {
+      toast.success("Shop owner created");
       queryClient.invalidateQueries({ queryKey: ["admin", "shop-owners"] });
       queryClient.invalidateQueries({ queryKey: ["admin", "dashboard"] });
       setIsCreateOpen(false);
       resetForm();
     },
     onError: (err: { response?: { data?: { message?: string } }; message?: string }) => {
-      setFormError(err.response?.data?.message || err.message || "Failed to create merchant account.");
+      setFormError(err.response?.data?.message || err.message || "Failed to create shop owner.");
+      toast.error(err.response?.data?.message || err.message || "Failed to create shop owner.");
     },
   });
 
@@ -93,12 +97,14 @@ export default function AdminShopOwnersPage() {
       return res.data;
     },
     onSuccess: () => {
+      toast.success("Shop owner updated");
       queryClient.invalidateQueries({ queryKey: ["admin", "shop-owners"] });
       setEditUser(null);
       resetForm();
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {
-      setFormError(err.response?.data?.message || "Failed to update merchant.");
+      setFormError(err.response?.data?.message || "Failed to update shop owner.");
+      toast.error(err.response?.data?.message || "Failed to update shop owner.");
     },
   });
 
@@ -113,11 +119,13 @@ export default function AdminShopOwnersPage() {
       return res.data;
     },
     onSuccess: () => {
+      toast.success("Password reset");
       setResetUser(null);
       setPassword("");
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {
       setFormError(err.response?.data?.message || "Failed to reset password.");
+      toast.error(err.response?.data?.message || "Failed to reset password.");
     },
   });
 
@@ -148,8 +156,8 @@ export default function AdminShopOwnersPage() {
   return (
     <DashboardLayout
       allowedRole="admin"
-      title="Shop Owner Management"
-      description="Manage merchant tenant accounts, credentials, and storefront associations"
+      title="Shop owners"
+      description="Accounts that can sign in and manage shops"
       actions={
         <Button onClick={() => { resetForm(); setIsCreateOpen(true); }} className="gap-2">
           <Plus className="h-4 w-4" /> Add Shop Owner
@@ -173,19 +181,19 @@ export default function AdminShopOwnersPage() {
       <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-600">
-            <thead className="bg-slate-50 text-xs font-semibold uppercase text-slate-500 border-b border-slate-200">
+            <thead className="border-b border-slate-200 bg-slate-50/60">
               <tr>
-                <th className="px-6 py-3.5">Merchant</th>
-                <th className="px-6 py-3.5">Email</th>
-                <th className="px-6 py-3.5">Owned Shops</th>
-                <th className="px-6 py-3.5">Registered</th>
-                <th className="px-6 py-3.5 text-right">Actions</th>
+                <th className="px-6 py-3 font-medium">Shop owner</th>
+                <th className="px-6 py-3 font-medium">Email</th>
+                <th className="px-6 py-3 font-medium">Owned Shops</th>
+                <th className="px-6 py-3 font-medium">Registered</th>
+                <th className="px-6 py-3 font-medium text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {isLoading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-slate-400">Loading accounts...</td>
+                  <td colSpan={5} className="p-0"><TableSkeleton rows={4} /></td>
                 </tr>
               ) : owners.length === 0 ? (
                 <tr>
@@ -219,27 +227,27 @@ export default function AdminShopOwnersPage() {
                       <div className="flex items-center justify-end gap-1.5">
                         <Button
                           variant="ghost"
-                          size="icon"
+                          size="icon" className="group h-8 w-8"
                           onClick={() => setViewUserDetail(owner)}
                           title="View Details"
                         >
-                          <Eye className="h-4 w-4 text-slate-500" />
+                          <Eye className="h-4 w-4 text-slate-500 group-hover:text-slate-900" />
                         </Button>
                         <Button
                           variant="ghost"
-                          size="icon"
+                          size="icon" className="group h-8 w-8"
                           onClick={() => openEdit(owner)}
                           title="Edit Account"
                         >
-                          <Edit2 className="h-4 w-4 text-indigo-600" />
+                          <Edit2 className="h-4 w-4 text-slate-500 group-hover:text-slate-900" />
                         </Button>
                         <Button
                           variant="ghost"
-                          size="icon"
+                          size="icon" className="group h-8 w-8"
                           onClick={() => openReset(owner)}
                           title="Reset Password"
                         >
-                          <KeyRound className="h-4 w-4 text-amber-600" />
+                          <KeyRound className="h-4 w-4 text-slate-500 group-hover:text-slate-900" />
                         </Button>
                       </div>
                     </td>
@@ -282,8 +290,8 @@ export default function AdminShopOwnersPage() {
       <Modal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
-        title="Add Shop Owner"
-        description="Create an account allowing a merchant to log in and manage storefronts"
+        title="New shop owner"
+        description="Create an account so they can sign in and manage their shop"
         maxWidth="md"
       >
         {formError && (
@@ -306,7 +314,7 @@ export default function AdminShopOwnersPage() {
             <label className="text-xs font-medium text-slate-700">Email Address *</label>
             <Input
               type="email"
-              placeholder="merchant@example.com"
+              placeholder="owner@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -327,7 +335,7 @@ export default function AdminShopOwnersPage() {
               Cancel
             </Button>
             <Button onClick={() => createMutation.mutate()} isLoading={createMutation.isPending}>
-              Create Merchant
+              Create shop owner
             </Button>
           </div>
         </div>
@@ -421,7 +429,7 @@ export default function AdminShopOwnersPage() {
       <Modal
         isOpen={!!viewUserDetail}
         onClose={() => setViewUserDetail(null)}
-        title={`Merchant Profile: ${viewUserDetail?.name}`}
+        title={`${viewUserDetail?.name}`}
         maxWidth="md"
       >
         {viewUserDetail && (
@@ -445,7 +453,7 @@ export default function AdminShopOwnersPage() {
                         <p className="font-semibold text-slate-800">{s.name}</p>
                         <p className="text-slate-400">/store/{s.slug}</p>
                       </div>
-                      <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 capitalize">
+                      <span className="text-xs font-medium px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 capitalize">
                         {s.status}
                       </span>
                     </div>

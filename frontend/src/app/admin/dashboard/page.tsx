@@ -5,15 +5,15 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { DashboardLayout } from "@/components/shared/DashboardLayout";
 import { StatCard } from "@/components/ui/stat-card";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { Shop, Product } from "@/types";
 import {
+  XCircle,
   Store,
   Package,
   Users,
   CheckCircle2,
-  XCircle,
   Layers,
   ArrowUpRight,
 } from "lucide-react";
@@ -43,52 +43,52 @@ export default function AdminDashboardPage() {
   return (
     <DashboardLayout
       allowedRole="admin"
-      title="System Overview"
-      description="Centralized administration metrics, active tenants, and global catalog telemetry"
+      title="Overview"
+      description="Shops, owners and catalog activity across the platform"
     >
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
         <StatCard
-          title="Total Shops"
+          title="Total shops"
           value={isLoading ? "-" : metrics.total_shops}
           icon={Store}
           color="indigo"
           description="Registered shops"
         />
         <StatCard
-          title="Active Shops"
+          title="Active shops"
           value={isLoading ? "-" : metrics.active_shops}
           icon={CheckCircle2}
           color="emerald"
-          description="Publicly serving"
+          description="Visible to customers"
         />
         <StatCard
-          title="Inactive Shops"
+          title="Inactive shops"
           value={isLoading ? "-" : metrics.inactive_shops}
           icon={XCircle}
           color="rose"
-          description="Paused / Disabled"
+          description="Hidden from customers"
         />
         <StatCard
-          title="Global Catalog"
+          title="Catalog products"
           value={isLoading ? "-" : metrics.total_products}
           icon={Package}
           color="sky"
-          description="Master products"
+          description="In the shared catalog"
         />
         <StatCard
-          title="Shop Owners"
+          title="Shop owners"
           value={isLoading ? "-" : metrics.total_shop_owners}
           icon={Users}
           color="indigo"
-          description="Merchant accounts"
+          description="Registered accounts"
         />
         <StatCard
-          title="Total Listings"
+          title="Total listings"
           value={isLoading ? "-" : metrics.total_listings}
           icon={Layers}
           color="amber"
-          description="Active shop-product links"
+          description="Products listed in shops"
         />
       </div>
 
@@ -125,10 +125,8 @@ export default function AdminDashboardPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <Badge variant={shop.status === "active" ? "success" : "destructive"}>
-                      {shop.status}
-                    </Badge>
-                    <p className="text-[11px] text-slate-400 mt-1">{formatDate(shop.created_at)}</p>
+                    <StatusBadge status={shop.status} />
+                    <p className="text-xs text-slate-400 mt-1">{formatDate(shop.created_at)}</p>
                   </div>
                 </div>
               ))
@@ -170,7 +168,7 @@ export default function AdminDashboardPage() {
                     <span className="text-xs font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
                       Added by {prod.creator?.name || "Admin"}
                     </span>
-                    <p className="text-[11px] text-slate-400 mt-1">{formatDate(prod.created_at)}</p>
+                    <p className="text-xs text-slate-400 mt-1">{formatDate(prod.created_at)}</p>
                   </div>
                 </div>
               ))

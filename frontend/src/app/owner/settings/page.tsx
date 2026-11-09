@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
@@ -58,6 +59,7 @@ export default function OwnerSettingsPage() {
       return res.data;
     },
     onSuccess: (data) => {
+      toast.success("Shop settings saved");
       setSuccessMessage("Shop settings saved successfully.");
       if (data.data) {
         setPrimaryShop(data.data);
@@ -73,7 +75,7 @@ export default function OwnerSettingsPage() {
   return (
     <DashboardLayout
       allowedRole="shop_owner"
-      title="Storefront Settings"
+      title="Shop settings"
       description="Configure public branding, customer contact details, and location for your storefront"
     >
       <div className="max-w-3xl space-y-6">

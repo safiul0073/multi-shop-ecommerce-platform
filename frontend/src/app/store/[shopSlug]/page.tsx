@@ -204,7 +204,7 @@ function StorefrontContent({
                 <div>
                   <div className="aspect-square w-full rounded-xl bg-slate-100 border border-slate-100 flex items-center justify-center mb-4 overflow-hidden relative group-hover:bg-indigo-50/40 transition-colors">
                     <Package className="h-16 w-16 text-slate-300 group-hover:text-indigo-400 group-hover:scale-110 transition-all duration-300" />
-                    <span className="absolute bottom-2.5 right-2.5 font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-white/90 text-slate-700 shadow-xs backdrop-blur-xs">
+                    <span className="absolute bottom-2.5 right-2.5 font-mono text-xs font-bold px-2 py-0.5 rounded bg-white/90 text-slate-700 shadow-xs backdrop-blur-xs">
                       {product.sku}
                     </span>
                   </div>
@@ -220,7 +220,7 @@ function StorefrontContent({
 
                 <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
                   <div>
-                    <span className="text-[11px] text-slate-400 uppercase font-semibold block">Price</span>
+                    <span className="text-xs text-slate-400 uppercase font-semibold block">Price</span>
                     <span className="text-lg font-black text-slate-900 tracking-tight">
                       {formatPrice(product.price)}
                     </span>

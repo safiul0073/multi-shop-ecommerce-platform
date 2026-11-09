@@ -122,10 +122,10 @@ export default function LoginPage() {
                       <p className="text-xs font-semibold text-slate-900 group-hover:text-indigo-900">
                         Administrator
                       </p>
-                      <p className="text-[11px] text-slate-500">admin@example.com</p>
+                      <p className="text-xs text-slate-500">admin@example.com</p>
                     </div>
                   </div>
-                  <span className="text-[11px] font-medium text-indigo-600">Select</span>
+                  <span className="text-xs font-medium text-indigo-600">Select</span>
                 </button>
 
                 <button
@@ -141,10 +141,10 @@ export default function LoginPage() {
                       <p className="text-xs font-semibold text-slate-900 group-hover:text-indigo-900">
                         Fashion House Owner
                       </p>
-                      <p className="text-[11px] text-slate-500">owner1@example.com</p>
+                      <p className="text-xs text-slate-500">owner1@example.com</p>
                     </div>
                   </div>
-                  <span className="text-[11px] font-medium text-indigo-600">Select</span>
+                  <span className="text-xs font-medium text-indigo-600">Select</span>
                 </button>
 
                 <button
@@ -160,10 +160,10 @@ export default function LoginPage() {
                       <p className="text-xs font-semibold text-slate-900 group-hover:text-indigo-900">
                         Tech Store Owner
                       </p>
-                      <p className="text-[11px] text-slate-500">owner2@example.com</p>
+                      <p className="text-xs text-slate-500">owner2@example.com</p>
                     </div>
                   </div>
-                  <span className="text-[11px] font-medium text-indigo-600">Select</span>
+                  <span className="text-xs font-medium text-indigo-600">Select</span>
                 </button>
               </div>
             </div>

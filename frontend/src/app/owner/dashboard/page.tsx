@@ -7,13 +7,13 @@ import { useAuth } from "@/context/AuthContext";
 import { DashboardLayout } from "@/components/shared/DashboardLayout";
 import { StatCard } from "@/components/ui/stat-card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/utils";
 import { ShopProduct } from "@/types";
 import {
+  XCircle,
   Boxes,
   CheckCircle2,
-  XCircle,
   Compass,
   ExternalLink,
   PlusCircle,
@@ -44,8 +44,8 @@ export default function OwnerDashboardPage() {
   return (
     <DashboardLayout
       allowedRole="shop_owner"
-      title={shop ? `${shop.name} Overview` : "Merchant Dashboard"}
-      description="Monitor your shop inventory, listed products, and storefront settings"
+      title={shop ? `${shop.name}` : "Dashboard"}
+      description="Your listings and storefront at a glance"
       actions={
         shop && (
           <Link href={`/store/${shop.slug}`} target="_blank">
@@ -58,7 +58,7 @@ export default function OwnerDashboardPage() {
     >
       {/* Shop Info Banner */}
       {shop && (
-        <div className="rounded-2xl border border-indigo-100 bg-linear-to-r from-indigo-50/80 via-white to-purple-50/50 p-6 mb-8 shadow-xs">
+        <div className="rounded-2xl border border-indigo-100 bg-white p-6 mb-8 shadow-xs">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="h-14 w-14 rounded-2xl bg-indigo-600 text-white font-bold text-2xl flex items-center justify-center shadow-md">
@@ -67,14 +67,12 @@ export default function OwnerDashboardPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-xl font-bold text-slate-900">{shop.name}</h2>
-                  <Badge variant={shop.status === "active" ? "success" : "destructive"}>
-                    {shop.status}
-                  </Badge>
+                  <StatusBadge status={shop.status} />
                 </div>
                 <p className="text-xs text-slate-500 mt-1 max-w-xl">
                   {shop.description || "No shop description set yet."}
                 </p>
-                <p className="text-[11px] font-mono text-indigo-600 mt-1">
+                <p className="text-xs font-mono text-indigo-600 mt-1">
                   Public URL: /store/{shop.slug}
                 </p>
               </div>
@@ -94,21 +92,21 @@ export default function OwnerDashboardPage() {
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
         <StatCard
-          title="Assigned Products"
+          title="Products"
           value={isLoading ? "-" : metrics.total_products}
           icon={Boxes}
           color="indigo"
           description="Total products added to your shop"
         />
         <StatCard
-          title="Active Listings"
+          title="Active listings"
           value={isLoading ? "-" : metrics.active_listings}
           icon={CheckCircle2}
           color="emerald"
           description="Visible to customers in storefront"
         />
         <StatCard
-          title="Inactive Listings"
+          title="Inactive listings"
           value={isLoading ? "-" : metrics.inactive_listings}
           icon={XCircle}
           color="amber"
@@ -161,13 +159,13 @@ export default function OwnerDashboardPage() {
           </Link>
 
           <Link href="/owner/my-products" className="block">
-            <div className="rounded-xl border border-slate-200 bg-white p-5 hover:border-purple-300 hover:shadow-md transition-all group">
+            <div className="rounded-xl border border-slate-200 bg-white p-5 hover:border-indigo-300 hover:shadow-md transition-all group">
               <div className="flex items-center gap-3">
-                <div className="p-3 rounded-xl bg-purple-50 text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                <div className="p-3 rounded-xl bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                   <Boxes className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-slate-900 group-hover:text-purple-600">
+                  <h4 className="font-semibold text-slate-900 group-hover:text-indigo-600">
                     Manage My Shop Listings
                   </h4>
                   <p className="text-xs text-slate-500 mt-0.5">
@@ -220,9 +218,7 @@ export default function OwnerDashboardPage() {
                     <span className="text-sm font-bold text-slate-900 block">
                       {formatPrice(listing.price)}
                     </span>
-                    <Badge variant={listing.status === "active" ? "success" : "secondary"}>
-                      {listing.status}
-                    </Badge>
+                    <StatusBadge status={listing.status} />
                   </div>
                 </div>
               ))
