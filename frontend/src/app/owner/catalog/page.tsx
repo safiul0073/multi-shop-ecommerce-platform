@@ -48,6 +48,7 @@ function CatalogContent() {
 
   useEffect(() => {
     if (searchParams.get("create") === "true") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- open dialog from ?create=true
       setIsCreateOpen(true);
     }
   }, [searchParams]);

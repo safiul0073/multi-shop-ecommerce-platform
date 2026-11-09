@@ -35,6 +35,7 @@ api.interceptors.response.use(
         localStorage.removeItem("auth_user");
         sessionStorage.removeItem("auth_token");
         sessionStorage.removeItem("auth_user");
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- full reload clears cached state outside React
         window.location.href = "/login";
       }
     }
@@ -43,7 +44,7 @@ api.interceptors.response.use(
 );
 
 // Helper for file uploads
-export async function uploadImage(file: File, folder = "uploads"): Promise<string> {
+export async function uploadImage(file: File, folder: "products" | "shops" | "banners" = "products"): Promise<string> {
   const formData = new FormData();
   formData.append("image", file);
   formData.append("folder", folder);

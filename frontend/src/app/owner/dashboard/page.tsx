@@ -8,7 +8,7 @@ import { DashboardLayout } from "@/components/shared/DashboardLayout";
 import { StatCard } from "@/components/ui/stat-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { formatPrice, formatDate } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
 import { ShopProduct } from "@/types";
 import {
   Boxes,

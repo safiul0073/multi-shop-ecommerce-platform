@@ -18,7 +18,6 @@ import {
   Edit2,
   Eye,
   Store,
-  Layers,
 } from "lucide-react";
 
 export default function AdminProductsPage() {

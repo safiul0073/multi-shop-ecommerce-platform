@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Modal } from "@/components/ui/modal";
-import { formatPrice, formatDate } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
 import { ShopProduct } from "@/types";
 import {
   Search,

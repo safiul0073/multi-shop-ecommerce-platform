@@ -34,6 +34,7 @@ export default function OwnerSettingsPage() {
 
   useEffect(() => {
     if (shopData) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sync form with fetched shop
       setName(shopData.name || "");
       setDescription(shopData.description || "");
       setContactEmail(shopData.contact_email || "");

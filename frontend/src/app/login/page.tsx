@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -172,13 +173,13 @@ export default function LoginPage() {
         {/* Public Storefront Direct Links */}
         <div className="text-center text-xs text-slate-500">
           Looking for customer storefronts?{" "}
-          <a href="/store/fashion-house" className="text-indigo-600 font-medium hover:underline">
+          <Link href="/store/fashion-house" className="text-indigo-600 font-medium hover:underline">
             Fashion House
-          </a>{" "}
+          </Link>{" "}
           or{" "}
-          <a href="/store/tech-store" className="text-indigo-600 font-medium hover:underline">
+          <Link href="/store/tech-store" className="text-indigo-600 font-medium hover:underline">
             Tech Store
-          </a>
+          </Link>
         </div>
       </div>
     </div>
