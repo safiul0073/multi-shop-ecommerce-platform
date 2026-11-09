@@ -8,9 +8,6 @@ use Illuminate\Support\Str;
 
 class ImageUploadService
 {
-    /**
-     * Upload an image to the public storage disk under the given folder.
-     */
     public function upload(UploadedFile $file, string $folder = 'uploads'): string
     {
         $extension = $file->getClientOriginalExtension();
@@ -20,9 +17,6 @@ class ImageUploadService
         return Storage::disk('public')->url($path);
     }
 
-    /**
-     * Replace an existing image file if present and upload the new one.
-     */
     public function replace(?string $oldUrl, UploadedFile $newFile, string $folder = 'uploads'): string
     {
         if ($oldUrl) {
@@ -41,7 +35,6 @@ class ImageUploadService
             return false;
         }
 
-        // Extract relative path from URL (e.g., /storage/uploads/xyz.jpg -> uploads/xyz.jpg)
         $parsedUrl = parse_url($url, PHP_URL_PATH);
         if ($parsedUrl) {
             $relativePath = preg_replace('#^/?storage/#', '', $parsedUrl);
@@ -53,17 +46,11 @@ class ImageUploadService
         return false;
     }
 
-    /**
-     * Fallback placeholder image URL.
-     */
     public function fallbackProductImage(): string
     {
         return asset('images/product-placeholder.svg');
     }
 
-    /**
-     * Fallback placeholder logo URL.
-     */
     public function fallbackShopLogo(): string
     {
         return asset('images/shop-placeholder.svg');

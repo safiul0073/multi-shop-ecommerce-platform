@@ -14,9 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
-    /**
-     * Authenticate user and issue API bearer token.
-     */
     public function login(LoginRequest $request): JsonResponse
     {
         $credentials = $request->validated();
@@ -29,7 +26,6 @@ class AuthController extends Controller
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        // Revoke older tokens if needed or issue a clean new one
         $token = $user->createToken('auth_token')->plainTextToken;
 
         $user->load('shops');
@@ -47,9 +43,6 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Revoke current token.
-     */
     public function logout(Request $request): JsonResponse
     {
         $request->user()?->currentAccessToken()?->delete();
@@ -60,9 +53,6 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Get the authenticated user's profile and shops.
-     */
     public function me(Request $request): JsonResponse
     {
         $user = $request->user();

@@ -7,9 +7,6 @@ use App\Models\User;
 
 class ProductPolicy
 {
-    /**
-     * Perform pre-authorization checks.
-     */
     public function before(User $user, string $ability): ?bool
     {
         if ($user->isAdmin()) {
@@ -36,7 +33,6 @@ class ProductPolicy
 
     public function update(User $user, Product $product): bool
     {
-        // Owner can only edit products they personally created
         return $product->created_by === $user->id;
     }
 

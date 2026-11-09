@@ -18,7 +18,6 @@ class UpdateShopProductRequest extends FormRequest
         $shop = $this->route('shop');
         $shopId = $shop instanceof Shop ? $shop->id : $shop;
 
-        // Verify shop is owned by user
         if (!Shop::where('id', $shopId)->where('owner_id', $user->id)->exists()) {
             return false;
         }

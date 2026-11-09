@@ -61,17 +61,11 @@ class User extends Authenticatable
         return $this->role === UserRole::SHOP_OWNER;
     }
 
-    /**
-     * Shops owned by the user.
-     */
     public function shops(): HasMany
     {
         return $this->hasMany(Shop::class, 'owner_id');
     }
 
-    /**
-     * Products created by the user.
-     */
     public function products(): HasMany
     {
         return $this->hasMany(Product::class, 'created_by');

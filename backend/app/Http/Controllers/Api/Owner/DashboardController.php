@@ -17,7 +17,6 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
-        // Retrieve primary shop (or requested shop_id if owned)
         $shopId = $request->input('shop_id');
         $shop = $shopId
             ? $user->shops()->where('id', $shopId)->first()

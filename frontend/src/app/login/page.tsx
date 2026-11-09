@@ -45,7 +45,6 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-slate-50 to-slate-100 p-4">
       <div className="w-full max-w-md space-y-6">
-        {/* Brand header */}
         <div className="text-center space-y-2">
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-white font-black text-xl shadow-md">
             M
@@ -54,7 +53,6 @@ export default function LoginPage() {
           <p className="text-sm text-slate-500">Shared Catalog E-Commerce Management System</p>
         </div>
 
-        {/* Login Card */}
         <Card className="border-slate-200/80 shadow-lg">
           <CardHeader className="pb-4">
             <CardTitle>Sign in to your account</CardTitle>
@@ -103,7 +101,6 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            {/* Quick Demo Logins Box */}
             <div className="mt-6 pt-5 border-t border-slate-100">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2.5">
                 One-Click Demo Credentials
@@ -134,7 +131,7 @@ export default function LoginPage() {
                   className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 bg-slate-50/70 hover:bg-indigo-50/70 hover:border-indigo-200 text-left transition-all group"
                 >
                   <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 rounded-md bg-purple-100 text-purple-700">
+                    <div className="p-1.5 rounded-md bg-indigo-100 text-indigo-700">
                       <Store className="h-4 w-4" />
                     </div>
                     <div>
@@ -170,7 +167,6 @@ export default function LoginPage() {
           </CardContent>
         </Card>
 
-        {/* Public Storefront Direct Links */}
         <div className="text-center text-xs text-slate-500">
           Looking for customer storefronts?{" "}
           <Link href="/store/fashion-house" className="text-indigo-600 font-medium hover:underline">

@@ -19,13 +19,11 @@ class CatalogController extends Controller
     {
         $user = $request->user();
 
-        // Determine which shop of the owner to check for "already added" state
         $shopId = $request->input('shop_id');
         if (! $shopId) {
             $shop = $user->shops()->first();
             $shopId = $shop?->id;
         } else {
-            // Verify ownership of the specified shop
             $isOwner = $user->shops()->where('id', $shopId)->exists();
             if (! $isOwner) {
                 return response()->json([

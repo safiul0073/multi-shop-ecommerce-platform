@@ -17,9 +17,6 @@ class ShopService
         protected ImageUploadService $imageUploadService
     ) {}
 
-    /**
-     * List shops with filtering, search, and pagination.
-     */
     public function listShops(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
         $query = Shop::query()->with('owner')->withCount('shopProducts');
@@ -62,7 +59,6 @@ class ShopService
                 throw new InvalidArgumentException('A shop must have an associated owner.');
             }
 
-            // Ensure owner exists and is a shop owner
             $owner = User::findOrFail($ownerId);
             if ($owner->role !== UserRole::SHOP_OWNER) {
                 throw new InvalidArgumentException('Assigned user must have the shop owner role.');
@@ -91,9 +87,6 @@ class ShopService
         });
     }
 
-    /**
-     * Update shop details.
-     */
     public function updateShop(Shop $shop, array $data): Shop
     {
         if (!empty($data['slug']) && $data['slug'] !== $shop->slug) {
@@ -105,9 +98,6 @@ class ShopService
         return $shop->fresh(['owner']);
     }
 
-    /**
-     * Delete / Deactivate a shop.
-     */
     public function deleteShop(Shop $shop): bool
     {
         return (bool) $shop->delete();

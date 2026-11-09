@@ -1,5 +1,7 @@
 "use client";
 
+import { ProductImage } from "@/components/ui/product-image";
+
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
@@ -44,7 +46,7 @@ export default function OwnerDashboardPage() {
   return (
     <DashboardLayout
       allowedRole="shop_owner"
-      title={shop ? `${shop.name}` : "Dashboard"}
+      title="Dashboard"
       description="Your listings and storefront at a glance"
       actions={
         shop && (
@@ -56,7 +58,6 @@ export default function OwnerDashboardPage() {
         )
       }
     >
-      {/* Shop Info Banner */}
       {shop && (
         <div className="rounded-2xl border border-indigo-100 bg-white p-6 mb-8 shadow-xs">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -89,7 +90,6 @@ export default function OwnerDashboardPage() {
         </div>
       )}
 
-      {/* Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
         <StatCard
           title="Products"
@@ -114,9 +114,7 @@ export default function OwnerDashboardPage() {
         />
       </div>
 
-      {/* Quick Actions & Recent Inventory */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Quick Action Tiles */}
         <div className="space-y-4">
           <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500">
             Quick Actions
@@ -177,7 +175,6 @@ export default function OwnerDashboardPage() {
           </Link>
         </div>
 
-        {/* Recently Added Products in this shop */}
         <div className="lg:col-span-2 rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
           <div className="flex items-center justify-between p-5 border-b border-slate-100">
             <div>
@@ -206,9 +203,7 @@ export default function OwnerDashboardPage() {
               recentProducts.map((listing) => (
                 <div key={listing.id} className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center font-semibold text-indigo-600 shrink-0">
-                      <Package className="h-5 w-5" />
-                    </div>
+                    <ProductImage src={listing.effective_thumbnail} alt={listing.product?.name ?? ""} className="h-10 w-10 shrink-0 rounded-lg ring-1 ring-slate-200" />
                     <div>
                       <p className="text-sm font-semibold text-slate-900">{listing.product?.name}</p>
                       <p className="text-xs text-slate-400 font-mono">SKU: {listing.product?.sku}</p>

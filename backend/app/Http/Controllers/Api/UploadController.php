@@ -13,9 +13,6 @@ class UploadController extends Controller
         protected ImageUploadService $imageUploadService
     ) {}
 
-    /**
-     * Upload an image and return its URL.
-     */
     public function upload(UploadImageRequest $request): JsonResponse
     {
         $file = $request->file('image');

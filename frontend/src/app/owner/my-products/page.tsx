@@ -1,5 +1,7 @@
 "use client";
 
+import { ProductImage } from "@/components/ui/product-image";
+
 import { toast } from "sonner";
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -34,19 +36,16 @@ export default function OwnerMyProductsPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
 
-  // Modals state
   const [editListing, setEditListing] = useState<ShopProduct | null>(null);
   const [deleteListingId, setDeleteListingId] = useState<number | null>(null);
   const [viewListingDetail, setViewListingDetail] = useState<ShopProduct | null>(null);
 
-  // Form states
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [thumbnail, setThumbnail] = useState("");
   const [status, setStatus] = useState<"active" | "inactive">("active");
   const [formError, setFormError] = useState("");
 
-  // Query shop listings
   const { data: listingsData, isLoading } = useQuery({
     queryKey: ["owner", "my-products", primaryShop?.id, search, statusFilter, page],
     enabled: !!primaryShop,
@@ -62,7 +61,6 @@ export default function OwnerMyProductsPage() {
     },
   });
 
-  // Update listing mutation
   const updateMutation = useMutation({
     mutationFn: async () => {
       if (!editListing || !primaryShop) return;
@@ -126,12 +124,11 @@ export default function OwnerMyProductsPage() {
       actions={
         <Link href="/owner/catalog">
           <Button className="gap-2">
-            <Plus className="h-4 w-4" /> Add Products from Catalog
+            <Plus className="h-4 w-4" /> Add from catalog
           </Button>
         </Link>
       }
     >
-      {/* Search & Filter Toolbar */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6 items-center justify-between">
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -156,7 +153,6 @@ export default function OwnerMyProductsPage() {
         </div>
       </div>
 
-      {/* Listings Table */}
       <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-600">
@@ -190,9 +186,7 @@ export default function OwnerMyProductsPage() {
                   <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center font-bold text-indigo-700 shrink-0">
-                          <Package className="h-5 w-5" />
-                        </div>
+                        <ProductImage src={item.effective_thumbnail} alt={item.product?.name ?? ""} className="h-10 w-10 shrink-0 rounded-lg ring-1 ring-slate-200" />
                         <div>
                           <p className="font-semibold text-slate-900">{item.product?.name}</p>
                           <p className="text-xs text-slate-400 line-clamp-1 max-w-xs">
@@ -256,7 +250,6 @@ export default function OwnerMyProductsPage() {
           </table>
         </div>
 
-        {/* Pagination Bar */}
         {meta && meta.last_page > 1 && (
           <div className="flex items-center justify-between border-t border-slate-100 px-6 py-3 text-xs text-slate-500">
             <span>
@@ -284,7 +277,6 @@ export default function OwnerMyProductsPage() {
         )}
       </div>
 
-      {/* EDIT LISTING MODAL */}
       <Modal
         isOpen={!!editListing}
         onClose={() => setEditListing(null)}
@@ -356,7 +348,6 @@ export default function OwnerMyProductsPage() {
         </div>
       </Modal>
 
-      {/* REMOVE LISTING CONFIRMATION */}
       <Modal
         isOpen={!!deleteListingId}
         onClose={() => setDeleteListingId(null)}
@@ -386,7 +377,6 @@ export default function OwnerMyProductsPage() {
         </div>
       </Modal>
 
-      {/* LISTING DETAILS VIEW */}
       <Modal
         isOpen={!!viewListingDetail}
         onClose={() => setViewListingDetail(null)}

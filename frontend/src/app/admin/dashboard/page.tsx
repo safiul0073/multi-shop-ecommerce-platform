@@ -1,5 +1,7 @@
 "use client";
 
+import { ProductImage } from "@/components/ui/product-image";
+
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
@@ -46,7 +48,6 @@ export default function AdminDashboardPage() {
       title="Overview"
       description="Shops, owners and catalog activity across the platform"
     >
-      {/* Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
         <StatCard
           title="Total shops"
@@ -92,9 +93,7 @@ export default function AdminDashboardPage() {
         />
       </div>
 
-      {/* Two Column Section: Recent Shops & Recent Products */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Shops */}
         <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
           <div className="flex items-center justify-between p-5 border-b border-slate-100">
             <div>
@@ -134,7 +133,6 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Recent Products in Shared Catalog */}
         <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
           <div className="flex items-center justify-between p-5 border-b border-slate-100">
             <div>
@@ -156,9 +154,7 @@ export default function AdminDashboardPage() {
               recentProducts.map((prod) => (
                 <div key={prod.id} className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center font-semibold text-indigo-600 shrink-0">
-                      <Package className="h-5 w-5" />
-                    </div>
+                    <ProductImage src={prod.thumbnail} alt={prod.name ?? ""} className="h-10 w-10 shrink-0 rounded-lg ring-1 ring-slate-200" />
                     <div>
                       <p className="text-sm font-semibold text-slate-900">{prod.name}</p>
                       <p className="text-xs text-slate-400 font-mono">SKU: {prod.sku}</p>

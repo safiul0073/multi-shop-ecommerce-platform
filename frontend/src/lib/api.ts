@@ -12,7 +12,6 @@ export const api = axios.create({
   withCredentials: true,
 });
 
-// Attach Bearer token to every request
 api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
@@ -23,7 +22,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Intercept responses for auth expiration
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
@@ -43,7 +41,6 @@ api.interceptors.response.use(
   }
 );
 
-// Helper for file uploads
 export async function uploadImage(file: File, folder: "products" | "shops" | "banners" = "products"): Promise<string> {
   const formData = new FormData();
   formData.append("image", file);

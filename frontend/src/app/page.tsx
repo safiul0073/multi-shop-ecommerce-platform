@@ -1,180 +1,132 @@
 "use client";
 
 import Link from "next/link";
+import { useQueries } from "@tanstack/react-query";
+import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import {
-  Store,
-  ShieldCheck,
-  Package,
-  Layers,
-  ArrowRight,
-  ExternalLink,
-} from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { StorefrontShop } from "@/types";
+import { ArrowRight, Layers, Store, ShieldCheck } from "lucide-react";
+
+const FEATURED_SHOPS = ["fashion-house", "tech-store"];
+
+const FEATURES = [
+  {
+    icon: Layers,
+    title: "One shared catalog",
+    body: "Products created by admins or shop owners live in a single catalog that every shop can list from.",
+  },
+  {
+    icon: Store,
+    title: "Shop-level pricing",
+    body: "Each shop sets its own price, description and photo, falling back to the catalog defaults.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Customer isolation",
+    body: "Customers only see active products assigned to the shop they are visiting.",
+  },
+];
 
 export default function HomePage() {
+  const shops = useQueries({
+    queries: FEATURED_SHOPS.map((slug) => ({
+      queryKey: ["storefront", "shop", slug],
+      queryFn: async () => (await api.get(`/storefront/${slug}`)).data.data as StorefrontShop,
+      retry: false,
+    })),
+  });
+
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      {/* Navbar */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <div className="flex min-h-screen flex-col bg-white">
+      <header className="border-b border-slate-200">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center text-lg shadow-sm">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-sm font-semibold text-white">
               M
             </div>
-            <div>
-              <span className="font-extrabold text-slate-900 tracking-tight">MultiShop</span>
-              <span className="text-xs block font-semibold text-indigo-600 uppercase tracking-wider">
-                Management System
-              </span>
-            </div>
+            <span className="font-semibold tracking-tight text-slate-900">MultiShop</span>
           </div>
-
-          <div className="flex items-center gap-3">
-            <Link href="/login">
-              <Button variant="default" className="gap-2">
-                Sign In to Console <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
+          <Link href="/login">
+            <Button size="sm">Sign in</Button>
+          </Link>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold">
-          <Layers className="h-3.5 w-3.5" /> Centralized Shared Product Catalog Architecture
-        </div>
-
-        <h1 className="text-4xl sm:text-6xl font-black text-slate-900 tracking-tight leading-tight">
-          One Global Catalog. <br className="hidden sm:inline" />
-          <span className="text-indigo-600">Unlimited Independent Shops.</span>
+      <section className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 sm:py-24">
+        <h1 className="text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
+          One catalog. Many independent shops.
         </h1>
-
-        <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-          A production-grade multi-tenant e-commerce platform. Administrators and shop owners share a single
-          central product repository while independently setting custom prices, descriptions, and media.
+        <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
+          Admins and shop owners share a single product catalog. Each shop lists what it wants and
+          sets its own prices, details and photos.
         </p>
-
-        <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link href="/login">
-            <Button size="lg" className="gap-2 shadow-md">
-              Sign in to the console <ArrowRight className="h-4 w-4" />
+            <Button size="lg" className="gap-2">
+              Open dashboard <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
-          <Link href="/store/fashion-house">
-            <Button size="lg" variant="outline" className="gap-2 bg-white">
-              <Store className="h-4 w-4 text-purple-600" /> Explore Fashion House Storefront
-            </Button>
-          </Link>
+          <a href="#shops">
+            <Button size="lg" variant="outline">Browse shops</Button>
+          </a>
         </div>
       </section>
 
-      {/* Live Storefront Showcase */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-slate-900">Experience Live Storefronts</h2>
-          <p className="text-xs text-slate-500 mt-1">
-            Notice how the same global product is listed with different prices and descriptions in each shop
-          </p>
+      <section id="shops" className="mx-auto w-full max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
+        <h2 className="text-xl font-semibold tracking-tight text-slate-900">Featured shops</h2>
+        <p className="mt-1 text-sm text-slate-500">
+          The same catalog product can appear in both shops at different prices.
+        </p>
+        <div className="mt-6 grid gap-6 md:grid-cols-2">
+          {shops.map(({ data: shop, isLoading }, i) =>
+            isLoading ? (
+              <Skeleton key={i} className="h-72 w-full rounded-xl" />
+            ) : shop ? (
+              <Link
+                key={shop.slug}
+                href={`/store/${shop.slug}`}
+                className="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:shadow-lg"
+              >
+                <div className="relative h-48 overflow-hidden bg-slate-900">
+                  {shop.banner && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={shop.banner}
+                      alt=""
+                      className="h-full w-full object-cover opacity-90 transition-transform duration-500 group-hover:scale-105"
+                    />
+                  )}
+                </div>
+                <div className="flex items-center justify-between gap-4 p-5">
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-slate-900">{shop.name}</h3>
+                    <p className="mt-0.5 line-clamp-1 text-sm text-slate-500">{shop.description}</p>
+                  </div>
+                  <ArrowRight className="h-4 w-4 shrink-0 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-slate-900" />
+                </div>
+              </Link>
+            ) : null
+          )}
         </div>
+      </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Shop 1: Fashion House */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-xl bg-purple-100 text-purple-700 font-bold flex items-center justify-center text-xl">
-                  F
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-900 text-lg">Fashion House</h3>
-                  <p className="text-xs text-slate-500">Slug: fashion-house</p>
-                </div>
+      <section className="border-t border-slate-200 bg-slate-50">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
+          {FEATURES.map(({ icon: Icon, title, body }) => (
+            <div key={title}>
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white ring-1 ring-slate-200">
+                <Icon className="h-4 w-4 text-slate-700" />
               </div>
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">
-                Active Store
-              </span>
+              <h3 className="mt-4 font-semibold text-slate-900">{title}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{body}</p>
             </div>
-
-            <p className="text-xs text-slate-600 mb-6">
-              Curated contemporary fashion, premium denim, handcrafted leather, and luxury accessories.
-            </p>
-
-            <Link href="/store/fashion-house">
-              <Button className="w-full gap-2 bg-purple-600 hover:bg-purple-700">
-                Visit Storefront <ExternalLink className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-
-          {/* Shop 2: Tech Store */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-xl bg-sky-100 text-sky-700 font-bold flex items-center justify-center text-xl">
-                  T
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-900 text-lg">Tech Store</h3>
-                  <p className="text-xs text-slate-500">Slug: tech-store</p>
-                </div>
-              </div>
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">
-                Active Store
-              </span>
-            </div>
-
-            <p className="text-xs text-slate-600 mb-6">
-              Next-generation electronics, mechanical computing gear, audiophile headphones, and smart devices.
-            </p>
-
-            <Link href="/store/tech-store">
-              <Button className="w-full gap-2 bg-sky-600 hover:bg-sky-700">
-                Visit Storefront <ExternalLink className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* Feature Highlights */}
-      <section className="bg-white border-y border-slate-200 py-16 px-4 sm:px-6 lg:px-8 mt-12">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 space-y-3">
-            <div className="h-10 w-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">
-              <Package className="h-5 w-5" />
-            </div>
-            <h3 className="font-bold text-slate-900 text-base">Shared Global Catalog</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Products created by admins or shop owners reside centrally in the shared repository without duplication.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 space-y-3">
-            <div className="h-10 w-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
-              <Store className="h-5 w-5" />
-            </div>
-            <h3 className="font-bold text-slate-900 text-base">Independent Shop Pricing</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Each shop owner sets independent selling prices, promotional descriptions, and thumbnails with automatic global fallbacks.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 space-y-3">
-            <div className="h-10 w-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold">
-              <ShieldCheck className="h-5 w-5" />
-            </div>
-            <h3 className="font-bold text-slate-900 text-base">Strict Cross-Shop Isolation</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Customers only see active listings assigned to the requested shop. Backend policies enforce tenant boundary security.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-8 text-center text-xs text-slate-400">
-        <p>Multi-Shop E-Commerce Management Platform • Laravel 13 + Next.js 15 + MySQL 8</p>
+      <footer className="border-t border-slate-200 py-6 text-center text-xs text-slate-500">
+        MultiShop · Laravel + Next.js
       </footer>
     </div>
   );

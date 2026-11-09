@@ -59,7 +59,6 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile toggle */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label={isOpen ? "Close navigation" : "Open navigation"}
@@ -78,7 +77,6 @@ export function Sidebar() {
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Brand */}
         <div className="flex h-16 items-center gap-2.5 px-5">
           <Link href={isAdmin ? "/admin/dashboard" : "/owner/dashboard"} className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white">
@@ -91,7 +89,6 @@ export function Sidebar() {
           </Link>
         </div>
 
-        {/* Active shop (owners) */}
         {!isAdmin && primaryShop && (
           <div className="mx-3 mb-2 rounded-lg border border-slate-200 px-3 py-2.5">
             <p className="text-xs text-slate-500">Current shop</p>
@@ -108,7 +105,6 @@ export function Sidebar() {
           </div>
         )}
 
-        {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-3 py-2">
           {sections.map((section) => (
             <div key={section.label} className="mb-5">
@@ -140,7 +136,6 @@ export function Sidebar() {
           ))}
         </nav>
 
-        {/* User */}
         <div className="border-t border-slate-200 p-3">
           <div className="flex items-center gap-3 rounded-md px-2 py-2">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-xs font-semibold text-indigo-700">

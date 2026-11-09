@@ -1,5 +1,7 @@
 "use client";
 
+import { ProductImage } from "@/components/ui/product-image";
+
 import { toast } from "sonner";
 import React, { useState, useEffect, Suspense } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -8,6 +10,7 @@ import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { DashboardLayout } from "@/components/shared/DashboardLayout";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -29,17 +32,14 @@ function CatalogContent() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
-  // Modals state
   const [selectedProductToAdd, setSelectedProductToAdd] = useState<Product | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-  // "Add to Shop" form fields
   const [sellingPrice, setSellingPrice] = useState("");
   const [customDescription, setCustomDescription] = useState("");
   const [customThumbnail, setCustomThumbnail] = useState("");
   const [addError, setAddError] = useState("");
 
-  // "Create New Product" form fields
   const [newProdName, setNewProdName] = useState("");
   const [newProdSku, setNewProdSku] = useState("");
   const [newProdDesc, setNewProdDesc] = useState("");
@@ -54,7 +54,6 @@ function CatalogContent() {
     }
   }, [searchParams]);
 
-  // Query shared catalog with is_listed calculated for primaryShop
   const { data: catalogData, isLoading } = useQuery({
     queryKey: ["owner", "catalog", primaryShop?.id, search, page],
     enabled: !!primaryShop,
@@ -70,7 +69,6 @@ function CatalogContent() {
     },
   });
 
-  // Add existing product to shop mutation
   const addMutation = useMutation({
     mutationFn: async () => {
       if (!selectedProductToAdd || !primaryShop) return;
@@ -98,7 +96,6 @@ function CatalogContent() {
     },
   });
 
-  // Create new global product & auto-list mutation
   const createMutation = useMutation({
     mutationFn: async () => {
       if (!primaryShop) return;
@@ -156,14 +153,13 @@ function CatalogContent() {
     <DashboardLayout
       allowedRole="shop_owner"
       title="Browse catalog"
-      description="Browse central global inventory and configure custom selling prices for your shop"
+      description="Add shared products to your shop and set your own prices"
       actions={
         <Button onClick={() => { resetCreateForm(); setIsCreateOpen(true); }} className="gap-2">
           <Plus className="h-4 w-4" /> Create New Product
         </Button>
       }
     >
-      {/* Search Toolbar */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6 items-center justify-between">
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -180,10 +176,16 @@ function CatalogContent() {
         </div>
       </div>
 
-      {/* Product Cards Grid */}
       {isLoading ? (
-        <div className="py-20 text-center text-slate-400 text-sm">
-          Loading catalog products...
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="rounded-xl border border-slate-200 bg-white p-4 space-y-3">
+              <Skeleton className="h-32 w-full rounded-lg" />
+              <Skeleton className="h-3 w-1/3" />
+              <Skeleton className="h-4 w-2/3" />
+              <Skeleton className="h-8 w-full" />
+            </div>
+          ))}
         </div>
       ) : products.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
@@ -199,40 +201,35 @@ function CatalogContent() {
               className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-5 shadow-xs hover:shadow-md transition-all group"
             >
               <div>
-                {/* Thumbnail / Placeholder */}
-                <div className="aspect-video w-full rounded-lg bg-slate-100 border border-slate-100 flex items-center justify-center mb-4 overflow-hidden relative">
-                  <Package className="h-8 w-8 text-slate-400 group-hover:scale-110 transition-transform" />
+                <div className="aspect-[4/3] w-full rounded-lg mb-4 overflow-hidden relative">
+                  <ProductImage src={prod.thumbnail} alt={prod.name} className="h-full w-full [&_img]:transition-transform [&_img]:duration-500 group-hover:[&_img]:scale-105" />
                   {prod.is_listed && (
                     <div className="absolute top-2 right-2">
                       <Badge variant="success" className="shadow-xs">
-                        <Check className="h-3 w-3 mr-1" /> In Your Shop
+                        <Check className="h-3 w-3 mr-1" /> In your shop
                       </Badge>
                     </div>
                   )}
                 </div>
 
-                {/* SKU Badge & Creator */}
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                <div className="mb-2 flex items-center justify-between gap-2 min-w-0">
+                  <span className="shrink-0 whitespace-nowrap font-mono text-xs font-medium px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
                     {prod.sku}
                   </span>
-                  <span className="text-xs text-slate-400">
-                    By {prod.creator?.name || "Admin"}
+                  <span className="truncate text-xs text-slate-400" title={prod.creator?.name || "Admin"}>
+                    by {prod.creator?.name?.replace(/\s*\(.*\)$/, "") || "Admin"}
                   </span>
                 </div>
 
-                {/* Name */}
                 <h4 className="font-bold text-slate-900 text-sm mb-1 group-hover:text-indigo-600 transition-colors">
                   {prod.name}
                 </h4>
 
-                {/* Global Description */}
                 <p className="text-xs text-slate-500 line-clamp-2">
                   {prod.description || "No description provided."}
                 </p>
               </div>
 
-              {/* Action Button */}
               <div className="mt-5 pt-4 border-t border-slate-100">
                 {prod.is_listed ? (
                   <Button
@@ -241,7 +238,7 @@ function CatalogContent() {
                     className="w-full text-slate-600 cursor-default"
                     disabled
                   >
-                    <Check className="h-3.5 w-3.5 mr-1 text-emerald-600" /> Already Added
+                    <Check className="h-3.5 w-3.5 mr-1 text-emerald-600" /> Already added
                   </Button>
                 ) : (
                   <Button
@@ -250,7 +247,7 @@ function CatalogContent() {
                     className="w-full gap-1.5"
                     onClick={() => openAddModal(prod)}
                   >
-                    <Plus className="h-3.5 w-3.5" /> Add to My Shop
+                    <Plus className="h-3.5 w-3.5" /> Add to shop
                   </Button>
                 )}
               </div>
@@ -259,7 +256,6 @@ function CatalogContent() {
         </div>
       )}
 
-      {/* Pagination Bar */}
       {meta && meta.last_page > 1 && (
         <div className="flex items-center justify-between mt-6 text-xs text-slate-500">
           <span>
@@ -286,7 +282,6 @@ function CatalogContent() {
         </div>
       )}
 
-      {/* ADD EXISTING PRODUCT TO SHOP MODAL */}
       <Modal
         isOpen={!!selectedProductToAdd}
         onClose={() => setSelectedProductToAdd(null)}
@@ -367,7 +362,6 @@ function CatalogContent() {
         )}
       </Modal>
 
-      {/* CREATE NEW PRODUCT MODAL (Adds to Catalog & Shop) */}
       <Modal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}

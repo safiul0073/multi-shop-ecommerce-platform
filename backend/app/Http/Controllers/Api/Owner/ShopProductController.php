@@ -71,7 +71,6 @@ class ShopProductController extends Controller
 
     public function update(UpdateShopProductRequest $request, Shop $shop, ShopProduct $shopProduct): JsonResponse
     {
-        // Enforce boundary check
         if ((int) $shopProduct->shop_id !== (int) $shop->id) {
             return response()->json([
                 'success' => false,

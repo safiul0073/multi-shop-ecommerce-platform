@@ -1,5 +1,7 @@
 "use client";
 
+import { ProductImage } from "@/components/ui/product-image";
+
 import { toast } from "sonner";
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -27,19 +29,16 @@ export default function AdminProductsPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
-  // Modals state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [selectedProductDetail, setSelectedProductDetail] = useState<Product | null>(null);
   const [deleteProductId, setDeleteProductId] = useState<number | null>(null);
 
-  // Form state
   const [name, setName] = useState("");
   const [sku, setSku] = useState("");
   const [description, setDescription] = useState("");
   const [formError, setFormError] = useState("");
 
-  // Query global products
   const { data: productsData, isLoading } = useQuery({
     queryKey: ["admin", "products", search, page],
     queryFn: async () => {
@@ -51,7 +50,6 @@ export default function AdminProductsPage() {
     },
   });
 
-  // Query details including which shops adopted the product
   const { data: productWithShops } = useQuery({
     queryKey: ["admin", "product-detail", selectedProductDetail?.id],
     enabled: !!selectedProductDetail,
@@ -61,7 +59,6 @@ export default function AdminProductsPage() {
     },
   });
 
-  // Create Product Mutation
   const createMutation = useMutation({
     mutationFn: async () => {
       setFormError("");
@@ -85,7 +82,6 @@ export default function AdminProductsPage() {
     },
   });
 
-  // Update Product Mutation
   const updateMutation = useMutation({
     mutationFn: async () => {
       if (!editProduct) return;
@@ -109,7 +105,6 @@ export default function AdminProductsPage() {
     },
   });
 
-  // Delete Product Mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
       await api.delete(`/admin/products/${id}`);
@@ -154,7 +149,6 @@ export default function AdminProductsPage() {
         </Button>
       }
     >
-      {/* Search Toolbar */}
       <div className="flex gap-3 mb-6 items-center justify-between">
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -167,7 +161,6 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      {/* Catalog Table */}
       <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-600">
@@ -198,9 +191,7 @@ export default function AdminProductsPage() {
                   <tr key={prod.id} className="hover:bg-slate-50/80 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center font-bold text-indigo-700 shrink-0">
-                          <Package className="h-5 w-5" />
-                        </div>
+                        <ProductImage src={prod.thumbnail} alt={prod.name ?? ""} className="h-10 w-10 shrink-0 rounded-lg ring-1 ring-slate-200" />
                         <div>
                           <p className="font-semibold text-slate-900">{prod.name}</p>
                           <p className="text-xs text-slate-400 line-clamp-1 max-w-xs">{prod.description || "No description"}</p>
@@ -264,7 +255,6 @@ export default function AdminProductsPage() {
           </table>
         </div>
 
-        {/* Pagination Bar */}
         {meta && meta.last_page > 1 && (
           <div className="flex items-center justify-between border-t border-slate-100 px-6 py-3 text-xs text-slate-500">
             <span>
@@ -292,7 +282,6 @@ export default function AdminProductsPage() {
         )}
       </div>
 
-      {/* CREATE PRODUCT MODAL */}
       <Modal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
@@ -346,7 +335,6 @@ export default function AdminProductsPage() {
         </div>
       </Modal>
 
-      {/* EDIT PRODUCT MODAL */}
       <Modal
         isOpen={!!editProduct}
         onClose={() => setEditProduct(null)}
@@ -390,7 +378,6 @@ export default function AdminProductsPage() {
         </div>
       </Modal>
 
-      {/* DELETE CONFIRMATION MODAL */}
       <Modal
         isOpen={!!deleteProductId}
         onClose={() => setDeleteProductId(null)}
@@ -412,7 +399,6 @@ export default function AdminProductsPage() {
         </div>
       </Modal>
 
-      {/* PRODUCT ADOPTION DETAILS MODAL */}
       <Modal
         isOpen={!!selectedProductDetail}
         onClose={() => setSelectedProductDetail(null)}

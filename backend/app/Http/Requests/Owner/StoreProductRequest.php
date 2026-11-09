@@ -19,7 +19,6 @@ class StoreProductRequest extends FormRequest
             return false;
         }
 
-        // Verify authenticated owner owns this shop
         return Shop::where('id', $shopId)->where('owner_id', $user->id)->exists();
     }
 

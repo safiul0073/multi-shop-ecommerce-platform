@@ -32,13 +32,11 @@ export default function AdminShopsPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
 
-  // Modals state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editShop, setEditShop] = useState<Shop | null>(null);
   const [selectedShopDetail, setSelectedShopDetail] = useState<Shop | null>(null);
   const [deleteShopId, setDeleteShopId] = useState<number | null>(null);
 
-  // Form state for creating a shop
   const [ownerMode, setOwnerMode] = useState<"existing" | "new">("existing");
   const [selectedOwnerId, setSelectedOwnerId] = useState<string>("");
   const [newOwnerName, setNewOwnerName] = useState("");
@@ -54,7 +52,6 @@ export default function AdminShopsPage() {
   const [shopStatus, setShopStatus] = useState<"active" | "inactive">("active");
   const [formError, setFormError] = useState("");
 
-  // Query shops list
   const { data: shopsData, isLoading } = useQuery({
     queryKey: ["admin", "shops", search, statusFilter, page],
     queryFn: async () => {
@@ -67,7 +64,6 @@ export default function AdminShopsPage() {
     },
   });
 
-  // Query shop owners for dropdown
   const { data: ownersData } = useQuery({
     queryKey: ["admin", "shop-owners", "list"],
     queryFn: async () => {
@@ -76,7 +72,6 @@ export default function AdminShopsPage() {
     },
   });
 
-  // Create Shop Mutation
   const createMutation = useMutation({
     mutationFn: async () => {
       setFormError("");
@@ -120,7 +115,6 @@ export default function AdminShopsPage() {
     },
   });
 
-  // Update Shop Mutation
   const updateMutation = useMutation({
     mutationFn: async () => {
       if (!editShop) return;
@@ -147,7 +141,6 @@ export default function AdminShopsPage() {
     },
   });
 
-  // Delete Shop Mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
       await api.delete(`/admin/shops/${id}`);
@@ -204,7 +197,6 @@ export default function AdminShopsPage() {
         </Button>
       }
     >
-      {/* Filters & Search Toolbar */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6 items-center justify-between">
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -229,7 +221,6 @@ export default function AdminShopsPage() {
         </div>
       </div>
 
-      {/* Shops Table */}
       <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-600">
@@ -326,7 +317,6 @@ export default function AdminShopsPage() {
           </table>
         </div>
 
-        {/* Pagination Bar */}
         {meta && meta.last_page > 1 && (
           <div className="flex items-center justify-between border-t border-slate-100 px-6 py-3 text-xs text-slate-500">
             <span>
@@ -354,7 +344,6 @@ export default function AdminShopsPage() {
         )}
       </div>
 
-      {/* CREATE SHOP MODAL */}
       <Modal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
@@ -369,7 +358,6 @@ export default function AdminShopsPage() {
         )}
 
         <div className="space-y-4">
-          {/* Owner Assignment Mode */}
           <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 space-y-3">
             <label className="text-xs font-bold uppercase tracking-wider text-slate-600 block">
               Shop Owner Assignment
@@ -435,7 +423,6 @@ export default function AdminShopsPage() {
             )}
           </div>
 
-          {/* Shop Details */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-700">Shop Name *</label>
@@ -518,7 +505,6 @@ export default function AdminShopsPage() {
         </div>
       </Modal>
 
-      {/* EDIT SHOP MODAL */}
       <Modal
         isOpen={!!editShop}
         onClose={() => setEditShop(null)}
@@ -592,7 +578,6 @@ export default function AdminShopsPage() {
         </div>
       </Modal>
 
-      {/* DELETE CONFIRMATION DIALOG */}
       <Modal
         isOpen={!!deleteShopId}
         onClose={() => setDeleteShopId(null)}
@@ -614,7 +599,6 @@ export default function AdminShopsPage() {
         </div>
       </Modal>
 
-      {/* SHOP DETAILS MODAL */}
       <Modal
         isOpen={!!selectedShopDetail}
         onClose={() => setSelectedShopDetail(null)}

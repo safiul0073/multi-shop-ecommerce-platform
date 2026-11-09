@@ -8,9 +8,6 @@ use Illuminate\Support\Str;
 
 class ProductService
 {
-    /**
-     * List shared catalog products with creator info, adoption counts, and optional shop-listing status.
-     */
     public function listGlobalProducts(array $filters = [], int $perPage = 15, ?int $forShopId = null): LengthAwarePaginator
     {
         $query = Product::query()
@@ -34,9 +31,6 @@ class ProductService
         return $query->latest()->paginate($perPage);
     }
 
-    /**
-     * Create a global catalog product.
-     */
     public function createProduct(array $data, int $userId): Product
     {
         $slug = !empty($data['slug']) ? Str::slug($data['slug']) : Str::slug($data['name']);
@@ -59,9 +53,6 @@ class ProductService
         ]);
     }
 
-    /**
-     * Update global product.
-     */
     public function updateProduct(Product $product, array $data): Product
     {
         if (!empty($data['slug']) && $data['slug'] !== $product->slug) {
@@ -77,9 +68,6 @@ class ProductService
         return $product->fresh(['creator']);
     }
 
-    /**
-     * Delete a product.
-     */
     public function deleteProduct(Product $product): bool
     {
         return (bool) $product->delete();

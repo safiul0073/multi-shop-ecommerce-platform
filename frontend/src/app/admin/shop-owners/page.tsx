@@ -26,19 +26,16 @@ export default function AdminShopOwnersPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
-  // Modals state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editUser, setEditUser] = useState<User | null>(null);
   const [resetUser, setResetUser] = useState<User | null>(null);
   const [viewUserDetail, setViewUserDetail] = useState<User | null>(null);
 
-  // Form states
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState("");
 
-  // Query shop owners
   const { data: ownersData, isLoading } = useQuery({
     queryKey: ["admin", "shop-owners", search, page],
     queryFn: async () => {
@@ -50,7 +47,6 @@ export default function AdminShopOwnersPage() {
     },
   });
 
-  // Query details including shops owned
   const { data: ownerShopsData } = useQuery({
     queryKey: ["admin", "owner-detail", viewUserDetail?.id],
     enabled: !!viewUserDetail,
@@ -60,7 +56,6 @@ export default function AdminShopOwnersPage() {
     },
   });
 
-  // Create Owner Mutation
   const createMutation = useMutation({
     mutationFn: async () => {
       setFormError("");
@@ -84,7 +79,6 @@ export default function AdminShopOwnersPage() {
     },
   });
 
-  // Update Owner Mutation
   const updateMutation = useMutation({
     mutationFn: async () => {
       if (!editUser) return;
@@ -108,7 +102,6 @@ export default function AdminShopOwnersPage() {
     },
   });
 
-  // Reset Password Mutation
   const resetMutation = useMutation({
     mutationFn: async () => {
       if (!resetUser) return;
@@ -160,11 +153,10 @@ export default function AdminShopOwnersPage() {
       description="Accounts that can sign in and manage shops"
       actions={
         <Button onClick={() => { resetForm(); setIsCreateOpen(true); }} className="gap-2">
-          <Plus className="h-4 w-4" /> Add Shop Owner
+          <Plus className="h-4 w-4" /> New shop owner
         </Button>
       }
     >
-      {/* Search Bar */}
       <div className="flex gap-3 mb-6 items-center justify-between">
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -177,7 +169,6 @@ export default function AdminShopOwnersPage() {
         </div>
       </div>
 
-      {/* Owners Table */}
       <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-600">
@@ -215,8 +206,8 @@ export default function AdminShopOwnersPage() {
                     </td>
                     <td className="px-6 py-4 text-slate-600">{owner.email}</td>
                     <td className="px-6 py-4">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-purple-50 text-xs font-semibold text-purple-700">
-                        <Store className="h-3.5 w-3.5 text-purple-500" />
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-50 text-xs font-semibold text-indigo-700">
+                        <Store className="h-3.5 w-3.5 text-indigo-500" />
                         {owner.shops_count || 0} {owner.shops_count === 1 ? "Shop" : "Shops"}
                       </span>
                     </td>
@@ -258,7 +249,6 @@ export default function AdminShopOwnersPage() {
           </table>
         </div>
 
-        {/* Pagination Bar */}
         {meta && meta.last_page > 1 && (
           <div className="flex items-center justify-between border-t border-slate-100 px-6 py-3 text-xs text-slate-500">
             <span>
@@ -286,7 +276,6 @@ export default function AdminShopOwnersPage() {
         )}
       </div>
 
-      {/* CREATE OWNER MODAL */}
       <Modal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
@@ -341,7 +330,6 @@ export default function AdminShopOwnersPage() {
         </div>
       </Modal>
 
-      {/* EDIT OWNER MODAL */}
       <Modal
         isOpen={!!editUser}
         onClose={() => setEditUser(null)}
@@ -386,7 +374,6 @@ export default function AdminShopOwnersPage() {
         </div>
       </Modal>
 
-      {/* RESET PASSWORD MODAL */}
       <Modal
         isOpen={!!resetUser}
         onClose={() => setResetUser(null)}
@@ -425,7 +412,6 @@ export default function AdminShopOwnersPage() {
         </div>
       </Modal>
 
-      {/* OWNER DETAILS & ASSOCIATED SHOPS */}
       <Modal
         isOpen={!!viewUserDetail}
         onClose={() => setViewUserDetail(null)}

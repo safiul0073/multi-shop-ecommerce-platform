@@ -14,9 +14,6 @@ use Illuminate\Http\Request;
 
 class StorefrontController extends Controller
 {
-    /**
-     * Get public shop information by slug.
-     */
     public function shop(string $shopSlug): JsonResponse
     {
         $shop = Shop::where('slug', $shopSlug)
@@ -36,9 +33,6 @@ class StorefrontController extends Controller
         ]);
     }
 
-    /**
-     * Get paginated active products for the given shop.
-     */
     public function products(string $shopSlug, Request $request): JsonResponse
     {
         $shop = Shop::where('slug', $shopSlug)
@@ -80,9 +74,6 @@ class StorefrontController extends Controller
         ]);
     }
 
-    /**
-     * Get specific active product detail within the shop context.
-     */
     public function product(string $shopSlug, string $productSlug): JsonResponse
     {
         $shop = Shop::where('slug', $shopSlug)

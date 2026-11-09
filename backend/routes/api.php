@@ -14,17 +14,8 @@ use App\Http\Controllers\Api\Storefront\StorefrontController;
 use App\Http\Controllers\Api\UploadController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes - Multi-Shop E-Commerce Management System (v1)
-|--------------------------------------------------------------------------
-*/
-
 Route::prefix('v1')->group(function () {
 
-    // ----------------------------------------------------------------------
-    // Authentication (Rate-limited)
-    // ----------------------------------------------------------------------
     Route::prefix('auth')->group(function () {
         Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
 
@@ -34,59 +25,37 @@ Route::prefix('v1')->group(function () {
         });
     });
 
-    // ----------------------------------------------------------------------
-    // File Uploads
-    // ----------------------------------------------------------------------
     Route::middleware('auth:sanctum')->post('/upload', [UploadController::class, 'upload']);
 
-    // ----------------------------------------------------------------------
-    // Administrator Protected Routes
-    // ----------------------------------------------------------------------
     Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index']);
 
-        // Shop Management
         Route::apiResource('shops', AdminShopController::class);
 
-        // Global Shared Catalog Management
         Route::apiResource('products', AdminProductController::class);
 
-        // Shop Owner Management
-        Route::get('/shop-owners', [AdminShopOwnerController::class, 'index']);
-        Route::post('/shop-owners', [AdminShopOwnerController::class, 'store']);
-        Route::get('/shop-owners/{user}', [AdminShopOwnerController::class, 'show']);
-        Route::put('/shop-owners/{user}', [AdminShopOwnerController::class, 'update']);
+        Route::apiResource('shop-owners', AdminShopOwnerController::class)
+            ->except('destroy')
+            ->parameters(['shop-owners' => 'user']);
         Route::post('/shop-owners/{user}/reset-password', [AdminShopOwnerController::class, 'resetPassword']);
     });
 
-    // ----------------------------------------------------------------------
-    // Shop Owner Protected Routes
-    // ----------------------------------------------------------------------
     Route::middleware(['auth:sanctum', 'role:shop_owner'])->prefix('owner')->group(function () {
         Route::get('/dashboard', [OwnerDashboardController::class, 'index']);
 
-        // Owner's shops
-        Route::get('/shops', [OwnerShopController::class, 'index']);
-        Route::get('/shops/{shop}', [OwnerShopController::class, 'show']);
-        Route::put('/shops/{shop}', [OwnerShopController::class, 'update']);
+        Route::apiResource('shops', OwnerShopController::class)->only(['index', 'show', 'update']);
 
-        // Browse Global Catalog
-        Route::get('/catalog', [OwnerCatalogController::class, 'index']);
-        Route::get('/catalog/{product}', [OwnerCatalogController::class, 'show']);
+        Route::apiResource('catalog', OwnerCatalogController::class)
+            ->only(['index', 'show'])
+            ->parameters(['catalog' => 'product']);
 
-        // Create global product & auto-list in shop
-        Route::post('/products', [OwnerProductController::class, 'store']);
+        Route::apiResource('products', OwnerProductController::class)->only('store');
 
-        // Shop product listing management
-        Route::get('/shops/{shop}/products', [OwnerShopProductController::class, 'index']);
-        Route::post('/shops/{shop}/products', [OwnerShopProductController::class, 'store']);
-        Route::put('/shops/{shop}/products/{shopProduct}', [OwnerShopProductController::class, 'update']);
-        Route::delete('/shops/{shop}/products/{shopProduct}', [OwnerShopProductController::class, 'destroy']);
+        Route::apiResource('shops.products', OwnerShopProductController::class)
+            ->except('show')
+            ->parameters(['products' => 'shopProduct']);
     });
 
-    // ----------------------------------------------------------------------
-    // Public Storefront (No Auth Required)
-    // ----------------------------------------------------------------------
     Route::prefix('storefront')->group(function () {
         Route::get('/{shopSlug}', [StorefrontController::class, 'shop']);
         Route::get('/{shopSlug}/products', [StorefrontController::class, 'products']);
